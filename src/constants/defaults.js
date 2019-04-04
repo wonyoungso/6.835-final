@@ -22,7 +22,7 @@ export const MODES = {
   1: { label: "division of states", mode: "division_geo-a4uhem", id: 1, zoom: 3.5 + (4.2 - 3.5) * 0.5 },
   2: { label: "states", mode: "state_geo-c0eo4i", id: 2, zoom: 4.2 + (4.8 - 4.2) * 0.5 },
   3: { label: "counties", mode: "county_geo-cn1mtx", id: 3, zoom: 4.8 + (6.2 - 4.8) * 0.5 },
-  4: { label: "cities", mode: "cities_geo_final-3o28cl", id: 4, zoom: 8 }
+  4: { label: "cities", mode: "cities_geo_final_02-0oxkdo", id: 4, zoom: 8 }
 }
 
 export const CURRENT_TIMES= [

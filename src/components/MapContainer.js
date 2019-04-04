@@ -60,7 +60,7 @@ class MapContainer extends Component {
 
     this.map = new mapboxgl.Map({
       container: this.refsMapContainer,
-      style: 'mapbox://styles/senseable/cjt5bagot01301fmw5qqcvhrf',
+      style: 'mapbox://styles/senseable/cjtaes7qg14i91fpjk069dqfv',
       zoom: 2.8,
       minZoom: 2.8,
       maxZoom: 15.5,
@@ -107,11 +107,11 @@ class MapContainer extends Component {
           label = `${realFeature.properties.NAME} County`;
           this.map.setFilter("county-geo-cn1mtx__hover", ["==", "GEOID", id]);   
           
-        } else if (this.props.currentMode === "cities_geo_final-3o28cl") {
+        } else if (this.props.currentMode === "cities_geo_final_02-0oxkdo") {
           
           let id = realFeature.properties.RegionID;
           label = `${realFeature.properties.name}, ${realFeature.properties.state}`;
-          this.map.setFilter("cities-geo-final-3o28cl__hover", ["==", "RegionID", id]);   
+          this.map.setFilter("cities-geo-final-02-0oxkdo__hover", ["==", "RegionID", id]);   
         }
         this.hoverPopup.setLngLat(e.lngLat)
           .setHTML(label)
@@ -123,7 +123,7 @@ class MapContainer extends Component {
       this.map.setFilter("division-geo-a4uhem__hover", ["==", "NAME", ""]);
       this.map.setFilter("state-geo-c0eo4i__hover", ["==", "NAME", ""]);
       this.map.setFilter("county-geo-cn1mtx__hover", ["==", "GEOID", ""]);
-      this.map.setFilter("cities-geo-final-3o28cl__hover", ["==", "RegionID", ""]);
+      this.map.setFilter("cities-geo-final-02-0oxkdo__hover", ["==", "RegionID", ""]);
       this.hoverPopup.remove();
 
     }
@@ -133,7 +133,7 @@ class MapContainer extends Component {
 
 
   handleViewClick(e) {
-    var features = this.map.queryRenderedFeatures(e.point, { layers: ["nation-geo-9an1r8", "division-geo-a4uhem", "state-geo-c0eo4i", "county-geo-cn1mtx", "cities-geo-final-3o28cl"] });
+    var features = this.map.queryRenderedFeatures(e.point, { layers: ["nation-geo-9an1r8", "division-geo-a4uhem", "state-geo-c0eo4i", "county-geo-cn1mtx", "cities-geo-final-02-0oxkdo"] });
 
     if (features.length) {
 
@@ -164,7 +164,7 @@ class MapContainer extends Component {
           
 
 
-        } else if (this.props.currentMode === "cities_geo_final-3o28cl") {
+        } else if (this.props.currentMode === "cities_geo_final_02-0oxkdo") {
           id = realFeature.properties.RegionID;
           
           graphInfo = {
@@ -217,11 +217,11 @@ class MapContainer extends Component {
     } else if (zoom >= 4.8 && zoom < 6.2) {
       currentMode = "county_geo-cn1mtx";
     } else {
-      currentMode = "cities_geo_final-3o28cl";
+      currentMode = "cities_geo_final_02-0oxkdo";
     }
     
-    this.map.setPaintProperty("cities-geo-final-3o28cl", 'circle-radius', this.zoomScale(zoom));
-    this.map.setPaintProperty("cities-geo-final-3o28cl__clicked", 'circle-radius', this.zoomScale(zoom) + 3);
+    this.map.setPaintProperty("cities-geo-final-02-0oxkdo", 'circle-radius', this.zoomScale(zoom));
+    this.map.setPaintProperty("cities-geo-final-02-0oxkdo__clicked", 'circle-radius', this.zoomScale(zoom) + 3);
 
     this.props.dispatch(changeMapSetting(zoom, center, currentMode));
   }
@@ -232,7 +232,7 @@ class MapContainer extends Component {
     this.map.setLayerZoomRange("division-geo-a4uhem", 3.5, 4.2);
     this.map.setLayerZoomRange("state-geo-c0eo4i", 4.2, 4.8);
     this.map.setLayerZoomRange("county-geo-cn1mtx", 4.8, 6.2);
-    this.map.setLayerZoomRange("cities-geo-final-3o28cl", 6.2, 15.5);
+    this.map.setLayerZoomRange("cities-geo-final-02-0oxkdo", 6.2, 15.5);
 
     this.map.addLayer({
       id: "nation-geo-9an1r8__hover",
@@ -356,11 +356,11 @@ class MapContainer extends Component {
     })
 
     this.map.addLayer({
-      id: "cities-geo-final-3o28cl__hover",
+      id: "cities-geo-final-02-0oxkdo__hover",
       maxzoom: 15.5,
       minzoom: 6.2,
       source: "composite",
-      "source-layer": "cities_geo_final-3o28cl",
+      "source-layer": "cities_geo_final_02-0oxkdo",
       type: "circle",
       "filter": ["==", "RegionID", ""],
       "paint": {
@@ -370,11 +370,11 @@ class MapContainer extends Component {
     });
 
     this.map.addLayer({
-      id: "cities-geo-final-3o28cl__clicked",
+      id: "cities-geo-final-02-0oxkdo__clicked",
       maxzoom: 15.5,
       minzoom: 6.2,
       source: "composite",
-      "source-layer": "cities_geo_final-3o28cl",
+      "source-layer": "cities_geo_final_02-0oxkdo",
       type: "circle",
       "paint": {
         'circle-color': "rgba(0, 0, 0, 0)",
@@ -498,8 +498,8 @@ class MapContainer extends Component {
     });
 
     // console.log(expression);
-    this.map.setPaintProperty("cities-geo-final-3o28cl", "circle-color", expression);
-    this.map.setPaintProperty("cities-geo-final-3o28cl", "circle-opacity", 0.7);
+    this.map.setPaintProperty("cities-geo-final-02-0oxkdo", "circle-color", expression);
+    this.map.setPaintProperty("cities-geo-final-02-0oxkdo", "circle-opacity", 0.7);
 
 
   }

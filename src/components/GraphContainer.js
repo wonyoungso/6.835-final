@@ -100,13 +100,16 @@ class GraphContainer extends Component {
   zoomed(e){
     if (d3.event.transform.k === 1) {
       this.zoomTransform = d3.zoomIdentity;
+      d3.select(".select-area").call(this.zoom.transform, d3.zoomIdentity);
+
     } else {
       this.zoomTransform = d3.event.transform;
+      // d3.event
     }
 
     let { containerWidth, containerHeight } = this.props;
     var width = containerWidth - this.margin.left - this.margin.right,
-      height = containerHeight - this.margin.top - this.margin.bottom;
+        height = containerHeight - this.margin.top - this.margin.bottom;
     var svg = d3.select(this.svgRef.current);
 
     // recover the new scale
@@ -251,7 +254,7 @@ class GraphContainer extends Component {
 
     var graphSelectedValues = _.values(graphSelected);
 
-    if (graphSelectedValues.length != _.values(prevProps.graphSelected).length || prevProps.currentTime !== this.props.currentTime) {
+    if (graphSelectedValues.length !== _.values(prevProps.graphSelected).length || prevProps.currentTime !== this.props.currentTime) {
 
       var svg = d3.select(this.svgRef.current);
       let width = containerWidth - this.margin.left - this.margin.right,
