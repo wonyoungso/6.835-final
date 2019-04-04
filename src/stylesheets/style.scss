@@ -1,0 +1,208 @@
+@import 'reset';
+@import 'fonts';
+$text_color:white;
+
+body {
+  background-color:black;
+  font-family: 'Styrene A', sans-serif;
+  font-size:14px;
+  line-height: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow:hidden;
+}
+
+body, div, p, h1, h2, h3 {
+  color:$text_color;
+}
+
+p, span, li {
+  word-break: keep-all;
+}
+
+
+body, div, p, ol, li {
+
+  font-family: 'Styrene A', sans-serif;
+  font-size: 1em;
+  line-height:1.3em;
+  font-style: normal;
+  font-weight: 400;
+  color: #555;
+  text-rendering: optimizeLegibility;
+}
+
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-button {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(150, 150, 150, 0.5);
+  border: 9px none #ffffff;
+  border-radius: 50px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(150, 150, 150, 0.8);
+}
+::-webkit-scrollbar-thumb:active {
+  background: rgba(150, 150, 150, 0.8);
+}
+
+::-webkit-scrollbar-track {
+  background: #EFEFEF;
+  border: 0px none #AAAAAA;
+  border-radius: 36px;
+}
+::-webkit-scrollbar-track:hover {
+  background: #DFDFDF;
+}
+::-webkit-scrollbar-track:active {
+  background: #EEEEEE;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+
+input {  
+  -webkit-box-shadow: none;
+  outline: -webkit-focus-ring-color auto 0px;
+  border:none;
+} 
+
+a {
+  text-decoration: none;
+  color:$text_color;
+}
+
+a:hover, a:focus {
+  opacity:.5;
+  -webkit-transition: all 0.1s ease-out;
+  -moz-transition: all 0.1s ease-out;
+  -ms-transition: all 0.1s ease-out;
+  -o-transition: all 0.1s ease-out;
+  transition: all 0.1s ease-out;
+}
+
+.coverage-graph {
+  position:fixed;
+  right: 150px;
+  padding-top:10px;
+  padding-left: 20px;
+  top: 10px;
+  z-index: 4;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+b {
+  font-weight: 700;
+  color: $text_color;
+}
+
+.fl {
+  float:left;
+}
+
+.marker {
+  width: 10px;
+  height: 10px;
+  background-color: white;
+  border-radius: 10px;
+}
+
+.bold {
+  font-size:1.0em;
+}
+
+.fr {
+  float:right;
+}
+
+.l-apple-box {
+  height:20px;
+}
+
+
+.l-apple-box--half {
+  height:10px;
+}
+
+.l-apple-box--double {
+  height:40px;
+}
+
+.line {
+    fill: none;
+    stroke: #ffab00;
+    opacity: 0.5;
+    stroke-width: 1;
+}
+
+.axis {
+  transition: 0.4s all;
+  opacity: 0.5;
+}
+
+.axis text {
+  fill:white;
+  opacity: 0.5;
+  font-family: "Styrene A";
+}
+
+.axis path, .axis line {
+  stroke:white;
+  opacity: 0.5;
+}
+
+.graph-text {
+  fill: white;
+  font-family: "Styrene A";
+  font-size: 11px;
+}
+
+.grapharea {
+  cursor:pointer;
+
+
+}
+
+.rc-slider.slider-current-time {
+  .rc-slider-rail {
+    background-color: #2f2f2f;
+    height: 3px;
+    border-radius: 0;
+  }
+
+  .rc-slider-track {
+    background-color: white;
+    border-radius: 0;
+  }
+  .rc-slider-handle {
+    border: solid 2px #ffffff;
+  }
+}
+
+text.title:hover, text.price:hover, text.close-btn:hover {
+  opacity: 0.5;
+}
+
+.mapboxgl-ctrl-bottom-left {
+  display: none;
+}
+
+.mapboxgl-ctrl-attrib-inner {
+  font-size: 9px;
+}
+
+.grid line{
+  stroke: #222;
+}
+
+.grid .domain {
+  opacity: 0;
+}
