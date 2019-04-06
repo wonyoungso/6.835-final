@@ -19,8 +19,18 @@ const MapDiv = styled.div`
 `;
 
 const MapContainerDiv = styled.div`
+  transform: ${props => props.mapOrGraph === "Map" ? "scale(1)" : "scale(0.8)"};
+  opacity: ${props => props.mapOrGraph === "Map" ? 1 : 0.5};
+  transform-origin: center left;
+  transition: 0.4s all;
+
   padding: 0 20px;
-  position: relative;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index:2;
+
+
 `;
 
 const Fragment = React.Fragment;
@@ -400,7 +410,7 @@ class MapContainer extends Component {
   }
 
   handleMoveEnd(e) {
-    console.log(e);
+    // console.log(e);
     if (e.command === "popupFromGraph") {
       this.hoverPopup.setHTML(e.popupName).setLngLat(e.center).addTo(this.map);
       this.props.dispatch(updateCurrentFocusMap(null));//this.props.currentFocusMap)
@@ -529,6 +539,9 @@ class MapContainer extends Component {
   componentDidUpdate(prevProps) {
     this.map.resize();
 
+    if (prevProps.zoom != this.props.zoom) {
+      this.map.setZoom(this.props.zoom);
+    }
 
     if (prevProps.currentTime !== this.props.currentTime) {
       // debugger;
@@ -622,9 +635,9 @@ class MapContainer extends Component {
 
 
   render() {
-    let { windowWidth, windowHeight } = this.props;
+    let { windowWidth, windowHeight, mapOrGraph } = this.props;
     return (
-      <MapContainerDiv>
+      <MapContainerDiv mapOrGraph={mapOrGraph}>
 
 
         <MapDiv ref={c => { this.refsMapContainer = c; }} className="map-container" style={{ width: windowWidth * 0.6 - 40, height: windowHeight - HEADER_HEIGHT - 20 }}>
@@ -647,7 +660,9 @@ let mapStateToProps = state => {
     zoom: state.zoom,
     center: state.center,
     currentMode: state.currentMode,
-    currentFocusMap: state.currentFocusMap
+    currentFocusMap: state.currentFocusMap,
+    mapOrGraph: state.mapOrGraph
+
   }
 }
 

@@ -8,6 +8,23 @@ export const windowResize = (dimension) => {
   }
 }
 
+export const changeScreenPosition = (screenPosition) => {
+  return {
+    type: "CHANGE_SCREEN_POSITION",
+    payload: {
+      screenPosition: screenPosition
+    }
+  }
+}
+export const changeMapOrGraph = (mapOrGraph) => {
+  return {
+    type: "CHANGE_MAP_OR_GRAPH",
+    payload: {
+      mapOrGraph: mapOrGraph
+    }
+  }
+}
+
 export const updateData = (rentData, buyData) => {
   return {
     type: 'UPDATE_DATA',

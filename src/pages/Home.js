@@ -1,16 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { MapContainer, GraphContainer, Header, SliderContainer } from '../components';
-import { windowResize, updateData } from '../actions';
+import { MapContainer, GraphContainer, Header, SliderContainer, Cursor, LeapManipulation } from '../components';
+import { windowResize  } from '../actions';
 import styled from 'styled-components';
-import * as d3 from 'd3';
-import _ from 'lodash';
-import moment from 'moment';
-import { GRAPH_HEIGHT, HEADER_HEIGHT } from '../constants/defaults';
+import { HEADER_HEIGHT } from '../constants/defaults';
 
 const Divider = styled.div`
-  display:flex;
-  justify-content: space-between;
+  position:relative;
 `;
 
 const DataArea = styled.div`
@@ -22,8 +18,24 @@ const DataArea = styled.div`
   font-size:0.7em;
 `;
 
+const GraphArea = styled.div`
+  transform: ${props => props.mapOrGraph === "Map" ? "scale(0.8)" : "scale(1)"};
+  opacity: ${props => props.mapOrGraph === "Map" ? 0.5: 1 };
+  transform-origin: center left;
+  transition: 0.4s all;
+  position: absolute;
+  left: 55%;
+  top: 0;
+  background: black;
+  z-index:0;
+`;
+
 const Fragment = React.Fragment;
 class Home extends Component {
+  constructor(props){
+    super(props);
+
+  }
   componentDidMount(){
 
     window.addEventListener('resize', this.resizeHandler.bind(this));
@@ -41,23 +53,21 @@ class Home extends Component {
 
 
   render() {
-    let { windowWidth, windowHeight } = this.props;
-    
+    let { windowWidth, windowHeight, mapOrGraph, screenPosition } = this.props;
+    // console.log(mapOrGraph);
+
     return (
       <Fragment>
+        <LeapManipulation />
         <Header />
         <Divider>
-
           <MapContainer />
-          <div>
+          <GraphArea mapOrGraph={mapOrGraph}>
             <SliderContainer />
-            <GraphContainer containerWidth={windowWidth * 0.4} containerHeight={windowHeight - HEADER_HEIGHT - 100 } />
-          </div>
+            <GraphContainer containerWidth={windowWidth * 0.4} containerHeight={windowHeight - HEADER_HEIGHT - 100} />
+          </GraphArea>
         </Divider>
-
-        <DataArea>
-          * Data: Zillow Rent Index (ZRI): A smoothed measure of the median estimated market rate rent across a given region and housing type. Zillow Research (2019).
-        </DataArea>
+        <Cursor cursorPosition={screenPosition} />
       </Fragment>
     );
   }
@@ -66,7 +76,9 @@ class Home extends Component {
 let mapStateToProps = state => {
   return {
     windowWidth: state.windowWidth,
-    windowHeight: state.windowHeight
+    windowHeight: state.windowHeight,
+    screenPosition: state.screenPosition,
+    mapOrGraph: state.mapOrGraph
   }
 }
 

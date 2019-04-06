@@ -90,7 +90,7 @@ class Header extends Component {
           <Line />
           <CreditArea>
             <h4>Wonyoung So</h4>
-            wso@mit.edu—6.894 · A3
+            wso@mit.edu
           </CreditArea>
         </Mover>
       </HeaderContainer>

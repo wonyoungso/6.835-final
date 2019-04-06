@@ -9,6 +9,16 @@ export default function screenReducer(state = DEFAULT_STATE, action){
         windowWidth: action.payload.windowWidth,
         windowHeight: action.payload.windowHeight
       }
+    case 'CHANGE_SCREEN_POSITION':
+      return {
+        ...state,
+        screenPosition: action.payload.screenPosition
+      }
+    case 'CHANGE_MAP_OR_GRAPH':
+      return {
+        ...state,
+        mapOrGraph: action.payload.mapOrGraph
+      }
     case 'CHANGE_CURRENT_TIME':
       return {
         ...state,
