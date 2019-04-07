@@ -11,6 +11,17 @@ Math.degrees = function (radians) {
   return radians * 180 / Math.PI;
 };
 
+export const isWithIn = (p1, bp) => {
+  
+  var margin = 30;
+
+  let leftTopBoundary = [bp[0] - (margin / 2), bp[1] - (margin / 2)];
+  let rightBottomBoundary = [bp[0] + (margin / 2), bp[1] + (margin / 2)];
+
+  console.log(p1, leftTopBoundary, rightBottomBoundary)
+  return (p1[0] >= leftTopBoundary[0] && p1[0] <= rightBottomBoundary[0] && p1[1] >= leftTopBoundary[1] && p1[1] <= rightBottomBoundary[1]);
+}
+
 export const angleBetween = (v1, v2) => {
 
   if (v1[0] === 0 && v1[1] === 0 && v1[2] === 0) {

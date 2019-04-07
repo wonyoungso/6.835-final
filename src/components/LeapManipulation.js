@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import Leap from 'leapjs';
 import { MODES } from '../constants/defaults';
 import { changeMapOrGraph, changeMapSetting, changeScreenPosition } from '../actions';
-import { screenPosition, angleBetween } from '../utils/';
+import { screenPosition, angleBetween, isWithIn } from '../utils/';
 import * as d3 from 'd3';
 import _ from 'lodash';
 
@@ -16,7 +16,7 @@ class LeapManipulation extends Component {
     this.panHands = [];
     this.recordLimit = 20;
     this.dragClickCount = 0;
-    this.dragClickThreshold = 20;
+    this.dragClickThreshold = 10;
 
   }
 
@@ -28,7 +28,15 @@ class LeapManipulation extends Component {
 
       if (mapOrGraph === "Map") {
         if (frame.hands.length === 1) {
-          this.detectPan(frame);
+          var hand = frame.hands[0];
+
+          if (hand.indexFinger.extended && hand.middleFinger.extended && !hand.thumb.extended && !hand.ringFinger.extended && !hand.pinky.extended) {
+            this.detectPan(frame);
+          } else if (hand.indexFinger.extended && !hand.middleFinger.extended && !hand.thumb.extended && !hand.ringFinger.extended && !hand.pinky.extended) {
+            this.selectMode(hand);
+          }
+
+
         } else if (frame.hands.length === 2) {
           this.detectZoom(frame);
         }
@@ -41,9 +49,23 @@ class LeapManipulation extends Component {
 
   }
 
+  selectMode(hand){
+    var idxFinger = hand.indexFinger;
+    var scrPos = screenPosition(hand.palmPosition);
+    this.props.dispatch(changeScreenPosition(scrPos));
+    
+    let metacarparlNormDir = Leap.vec3.normalize([0, 0, 0], idxFinger.metacarpal.direction());
+    let proximalNormDir = Leap.vec3.normalize([0, 0, 0], idxFinger.proximal.direction());
+
+    if (Math.degrees(angleBetween(metacarparlNormDir, proximalNormDir)) > 30){
+      console.log("click");
+      
+    }
+  }
+
   recordHands(hand){
     this.panHands.push(hand);
-    if (this.panHands.length > this.recordsLimit) {
+    if (this.panHands.length >= this.recordLimit) {
       this.panHands.shift();
     }
   }
@@ -81,15 +103,13 @@ class LeapManipulation extends Component {
 
   getAvgPos(hands) {
     
-    let len = hands.length;
-    let sumPos = [0, 0, 0];
+    var len = hands.length;
+    var sumPos = [0, 0, 0];
     for (let i = 0; i < len; i++){
-      debugger;
-      sumPos[0] += sumPos[0] + hands[i].tipPosition[0];
-      sumPos[1] += sumPos[1] + hands[i].tipPosition[1];
-      sumPos[2] += sumPos[2] + hands[i].tipPosition[2];
+      sumPos[0] += hands[i].indexFinger.tipPosition[0];
+      sumPos[1] += hands[i].indexFinger.tipPosition[1];
+      sumPos[2] += hands[i].indexFinger.tipPosition[2];
     }
-
     return [sumPos[0] / len, sumPos[1] / len, sumPos[2] / len];
 
   }  
@@ -97,26 +117,13 @@ class LeapManipulation extends Component {
   detectPan(frame){
     var hand = frame.hands[0];
     if (hand.indexFinger.extended && hand.middleFinger.extended && !hand.thumb.extended && !hand.ringFinger.extended && !hand.pinky.extended) {
-      this.recordHands(hand);
-      var avgTipPos = this.getAvgPos(this.panHands);
-      debugger;
+      var normVector = Leap.vec3.normalize([0, 0, 0], hand.indexFinger.tipVelocity);
+      var mag = 5;
       
-      // var velocity = [-hand.indexFinger.tipVelocity[0], -hand.indexFinger.tipVelocity[1]]
-      
+      window.map.panBy([normVector[0] * mag, -normVector[1] * mag], {
+        animate: false
+      });
     
-      // else {
-      //   this.dragClickCount++;
-      // }
-
-
-
-      // if (this.dragClickCount >= this.dragClickThreshold){
-    
-      // }
-      
-      // window.map.panBy(velocity);
-
-
     }
 
   }
