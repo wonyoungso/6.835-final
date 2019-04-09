@@ -6,10 +6,10 @@ const CursorComp = styled.div`
   left: 0;
   top: 0;
   z-index: 5;
-  width: 20px;
-  height: 20px;
+  width: 10px;
+  height: 10px;
   background:white;
-  border-radius: 20px;
+  border-radius: 10px;
 `;
 
 class Cursor extends Component {
@@ -17,7 +17,7 @@ class Cursor extends Component {
 
     let { cursorPosition } = this.props;
     return (
-      <CursorComp style={{ left: cursorPosition[0], top: cursorPosition[1]}}>
+      <CursorComp style={{ left: cursorPosition[0] + 15, top: cursorPosition[1] + 170}}>
       </CursorComp>
     )
   }

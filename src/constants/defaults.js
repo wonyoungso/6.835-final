@@ -11,6 +11,8 @@ export const DEFAULT_STATE = {
   currentMode: "nation_geo-9an1r8",
   mapOrGraph: "Map", // Graph
   currentFocusMap: null,
+  hoverPosition: [0, 0],
+  clickPosition: [0, 0],
   graphSelected: {
     
   }

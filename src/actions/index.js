@@ -8,6 +8,15 @@ export const windowResize = (dimension) => {
   }
 }
 
+export const changeClicked = (clicked) => {
+  return {
+    type: "CHANGE_CLICKED",
+    payload: {
+      clicked: clicked
+    }
+  }
+}
+
 export const changeScreenPosition = (screenPosition) => {
   return {
     type: "CHANGE_SCREEN_POSITION",

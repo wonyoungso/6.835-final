@@ -9,6 +9,11 @@ export default function screenReducer(state = DEFAULT_STATE, action){
         windowWidth: action.payload.windowWidth,
         windowHeight: action.payload.windowHeight
       }
+    case 'CHANGE_CLICKED':
+      return {
+        ...state,
+        clicked: action.payload.clicked
+      }
     case 'CHANGE_SCREEN_POSITION':
       return {
         ...state,

@@ -82,68 +82,78 @@ class MapContainer extends Component {
 
     this.map.on('style.load', this.handleStyleLoad.bind(this));
   }
-  handleMouseMove(e){
-    var features = this.map.queryRenderedFeatures(e.point, { layers: [this.props.currentMode.replace(/_/g, "-")] });
+  handleMouseMove(screenPosition){
+    // console.log("screenPosition", screenPosition);
+    var pointLatLng = this.map.unproject(screenPosition);
+    try {
+      var features = this.map.queryRenderedFeatures(screenPosition, { layers: [this.props.currentMode.replace(/_/g, "-")] });
 
-    if (features.length) {
+      // console.log(point);
+      if (features.length) {
 
-      let realFeature = _.filter(features, f => { return f.sourceLayer === this.props.currentMode });
+        let realFeature = _.filter(features, f => { return f.sourceLayer === this.props.currentMode });
 
 
-      if (realFeature.length > 0) {
-        realFeature = realFeature[0];
-        let label;
-        if (this.props.currentMode === MODES[0].mode) {
+        if (realFeature.length > 0) {
+          realFeature = realFeature[0];
+          let label;
+          if (this.props.currentMode === MODES[0].mode) {
 
-          let id = realFeature.properties.NAME;
-          label = id;
-          this.map.setFilter("nation-geo-9an1r8__hover", ["==", "NAME", id]);
+            let id = realFeature.properties.NAME;
+            label = id;
+            this.map.setFilter("nation-geo-9an1r8__hover", ["==", "NAME", id]);
 
-        } else if (this.props.currentMode === MODES[1].mode){
-          
-          let id = realFeature.properties.NAME;
-          label = id;
-          this.map.setFilter("division-geo-a4uhem__hover", ["==", "NAME", id]);
-          
-        } else if (this.props.currentMode === MODES[2].mode) {
-          
-          let id = realFeature.properties.NAME;
-          label = id;
-          this.map.setFilter("state-geo-c0eo4i__hover", ["==", "NAME", id]);
-          
-        } else if (this.props.currentMode === MODES[3].mode) {
-          
-          let id = realFeature.properties.GEOID;
-          label = `${realFeature.properties.NAME} County`;
-          this.map.setFilter("county-geo-cn1mtx__hover", ["==", "GEOID", id]);   
-          
-        } else if (this.props.currentMode === "cities_geo_final_02-0oxkdo") {
-          
-          let id = realFeature.properties.RegionID;
-          label = `${realFeature.properties.name}, ${realFeature.properties.state}`;
-          this.map.setFilter("cities-geo-final-02-0oxkdo__hover", ["==", "RegionID", id]);   
+          } else if (this.props.currentMode === MODES[1].mode){
+            
+            let id = realFeature.properties.NAME;
+            label = id;
+            this.map.setFilter("division-geo-a4uhem__hover", ["==", "NAME", id]);
+            
+          } else if (this.props.currentMode === MODES[2].mode) {
+            
+            let id = realFeature.properties.NAME;
+            label = id;
+            this.map.setFilter("state-geo-c0eo4i__hover", ["==", "NAME", id]);
+            
+          } else if (this.props.currentMode === MODES[3].mode) {
+            
+            let id = realFeature.properties.GEOID;
+            label = `${realFeature.properties.NAME} County`;
+            this.map.setFilter("county-geo-cn1mtx__hover", ["==", "GEOID", id]);   
+            
+          } else if (this.props.currentMode === "cities_geo_final_02-0oxkdo") {
+            
+            let id = realFeature.properties.RegionID;
+            label = `${realFeature.properties.name}, ${realFeature.properties.state}`;
+            this.map.setFilter("cities-geo-final-02-0oxkdo__hover", ["==", "RegionID", id]);   
+          }
+          this.hoverPopup.setLngLat(pointLatLng)
+            .setHTML(label)
+            .addTo(this.map);
         }
-        this.hoverPopup.setLngLat(e.lngLat)
-          .setHTML(label)
-          .addTo(this.map);
+      } else {
+        
+        this.map.setFilter("nation-geo-9an1r8__hover", ["==", "NAME", ""]);
+        this.map.setFilter("division-geo-a4uhem__hover", ["==", "NAME", ""]);
+        this.map.setFilter("state-geo-c0eo4i__hover", ["==", "NAME", ""]);
+        this.map.setFilter("county-geo-cn1mtx__hover", ["==", "GEOID", ""]);
+        this.map.setFilter("cities-geo-final-02-0oxkdo__hover", ["==", "RegionID", ""]);
+        this.hoverPopup.remove();
+
       }
-    } else {
-      
-      this.map.setFilter("nation-geo-9an1r8__hover", ["==", "NAME", ""]);
-      this.map.setFilter("division-geo-a4uhem__hover", ["==", "NAME", ""]);
-      this.map.setFilter("state-geo-c0eo4i__hover", ["==", "NAME", ""]);
-      this.map.setFilter("county-geo-cn1mtx__hover", ["==", "GEOID", ""]);
-      this.map.setFilter("cities-geo-final-02-0oxkdo__hover", ["==", "RegionID", ""]);
-      this.hoverPopup.remove();
+
+      this.map.getCanvas().style.cursor = features.length ? 'pointer' : '';
+    } catch(e){
 
     }
-
-    this.map.getCanvas().style.cursor = features.length ? 'pointer' : '';
+    
   }
 
 
-  handleViewClick(e) {
-    var features = this.map.queryRenderedFeatures(e.point, { layers: ["nation-geo-9an1r8", "division-geo-a4uhem", "state-geo-c0eo4i", "county-geo-cn1mtx", "cities-geo-final-02-0oxkdo"] });
+  handleViewClick(screenPosition) {
+    // var pointLatLng = this.map.unproject(screenPosition);
+
+    var features = this.map.queryRenderedFeatures(screenPosition, { layers: ["nation-geo-9an1r8", "division-geo-a4uhem", "state-geo-c0eo4i", "county-geo-cn1mtx", "cities-geo-final-02-0oxkdo"] });
 
     if (features.length) {
 
@@ -405,7 +415,7 @@ class MapContainer extends Component {
 
     this.map.on('zoom', this.handleZoom.bind(this));
     this.map.on('click', this.handleViewClick.bind(this));
-    this.map.on('mousemove', this.handleMouseMove);
+    // this.map.on('mousemove', this.handleMouseMove);
     this.map.on('moveend', this.handleMoveEnd.bind(this));
   }
 
@@ -539,8 +549,19 @@ class MapContainer extends Component {
   componentDidUpdate(prevProps) {
     this.map.resize();
 
-    if (prevProps.zoom != this.props.zoom) {
+    if (prevProps.clicked !== this.props.clicked && this.props.clicked) {
+
+      this.handleViewClick(this.props.screenPosition);
+    }
+    if (prevProps.zoom !== this.props.zoom) {
       this.map.setZoom(this.props.zoom);
+    }
+
+    if (prevProps.screenPosition[0] !== this.props.screenPosition[0] || 
+        prevProps.screenPosition[1] !== this.props.screenPosition[1]) {
+      
+      this.handleMouseMove(this.props.screenPosition);
+      
     }
 
     if (prevProps.currentTime !== this.props.currentTime) {
@@ -661,8 +682,9 @@ let mapStateToProps = state => {
     center: state.center,
     currentMode: state.currentMode,
     currentFocusMap: state.currentFocusMap,
-    mapOrGraph: state.mapOrGraph
-
+    mapOrGraph: state.mapOrGraph,
+    screenPosition: state.screenPosition,
+    clicked: state.clicked
   }
 }
 

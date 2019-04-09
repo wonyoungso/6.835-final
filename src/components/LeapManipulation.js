@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import Leap from 'leapjs';
 import { MODES } from '../constants/defaults';
-import { changeMapOrGraph, changeMapSetting, changeScreenPosition } from '../actions';
+import { changeMapOrGraph, changeMapSetting, changeScreenPosition, changeClicked } from '../actions';
 import { screenPosition, angleBetween, isWithIn } from '../utils/';
 import * as d3 from 'd3';
 import _ from 'lodash';
@@ -17,7 +17,7 @@ class LeapManipulation extends Component {
     this.recordLimit = 20;
     this.dragClickCount = 0;
     this.dragClickThreshold = 10;
-
+    this.clickTime = 0;
   }
 
   componentDidMount(){
@@ -33,7 +33,7 @@ class LeapManipulation extends Component {
           if (hand.indexFinger.extended && hand.middleFinger.extended && !hand.thumb.extended && !hand.ringFinger.extended && !hand.pinky.extended) {
             this.detectPan(frame);
           } else if (hand.indexFinger.extended && !hand.middleFinger.extended && !hand.thumb.extended && !hand.ringFinger.extended && !hand.pinky.extended) {
-            this.selectMode(hand);
+            this.selectMode(frame, this.controller.frame(1), hand);
           }
 
 
@@ -49,17 +49,35 @@ class LeapManipulation extends Component {
 
   }
 
-  selectMode(hand){
-    var idxFinger = hand.indexFinger;
+  selectMode(frame, lastFrame, hand){
     var scrPos = screenPosition(hand.palmPosition);
     this.props.dispatch(changeScreenPosition(scrPos));
     
-    let metacarparlNormDir = Leap.vec3.normalize([0, 0, 0], idxFinger.metacarpal.direction());
-    let proximalNormDir = Leap.vec3.normalize([0, 0, 0], idxFinger.proximal.direction());
+    if (!lastFrame.valid) {
+      return;
+    }
+    
+    if (this.props.clicked) {
+      this.props.dispatch(changeClicked(false));
+    }
 
-    if (Math.degrees(angleBetween(metacarparlNormDir, proximalNormDir)) > 30){
-      console.log("click");
-      
+    for (var i = 0; i < frame.pointables.length; i++) {
+      let pN = frame.pointables[i];
+      let pN_prev = _.find(lastFrame.pointables, p => p.id === pN.id);
+      if (!_.isUndefined(pN_prev)) {
+        if (!pN_prev.valid) {
+          continue;
+        }
+
+        // console.log("pN_prev.touchDistance:", pN_prev.touchDistance, "pN.touchDistance:", pN.touchDistance);
+        if (pN_prev.touchDistance >= 0 && pN.touchDistance < 0) {
+         
+          this.props.dispatch(changeClicked(true));
+          
+        }
+      }
+
+
     }
   }
 
@@ -118,7 +136,7 @@ class LeapManipulation extends Component {
     var hand = frame.hands[0];
     if (hand.indexFinger.extended && hand.middleFinger.extended && !hand.thumb.extended && !hand.ringFinger.extended && !hand.pinky.extended) {
       var normVector = Leap.vec3.normalize([0, 0, 0], hand.indexFinger.tipVelocity);
-      var mag = 5;
+      var mag = 3;
       
       window.map.panBy([normVector[0] * mag, -normVector[1] * mag], {
         animate: false
@@ -226,7 +244,8 @@ let mapStateToProps = state => {
     mapOrGraph: state.mapOrGraph,
     currentMode: state.currentMode,
     zoom: state.zoom,
-    center: state.center
+    center: state.center,
+    clicked: state.clicked
   }
 }
 
