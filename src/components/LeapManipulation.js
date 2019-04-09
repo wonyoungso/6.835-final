@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import Leap from 'leapjs';
 import { MODES } from '../constants/defaults';
-import { changeMapOrGraph, changeMapSetting, changeScreenPosition, changeClicked } from '../actions';
+import { changeMapOrGraph, changeMapSetting, changeScreenPosition, changeClicked, changeCurrentTime } from '../actions';
 import { screenPosition, angleBetween, isWithIn } from '../utils/';
 import * as d3 from 'd3';
 import _ from 'lodash';
@@ -18,6 +18,11 @@ class LeapManipulation extends Component {
     this.dragClickCount = 0;
     this.dragClickThreshold = 10;
     this.clickTime = 0;
+    this.isGrabbing = false;
+    this.maxX = -999;
+    this.minX = 999;
+    this.sliderScale = d3.scaleLinear().domain([-200, 200]).clamp(true).range([1, 98]);
+
   }
 
   componentDidMount(){
@@ -28,7 +33,7 @@ class LeapManipulation extends Component {
 
       if (mapOrGraph === "Map") {
         if (frame.hands.length === 1) {
-          var hand = frame.hands[0];
+          let hand = frame.hands[0];
 
           if (hand.indexFinger.extended && hand.middleFinger.extended && !hand.thumb.extended && !hand.ringFinger.extended && !hand.pinky.extended) {
             this.detectPan(frame);
@@ -41,12 +46,36 @@ class LeapManipulation extends Component {
           this.detectZoom(frame);
         }
 
-      }      
+      } else {
+
+        if (frame.hands.length === 1) {
+          let hand = frame.hands[0];
+          
+          this.detectSlider(hand);
+
+        }
+
+      }   
     });
 
 
     this.controller.connect();
 
+  }
+
+  detectSlider(hand){
+
+    this.isGrabbing = hand.pinchStrength > 0.9;
+    if (this.isGrabbing) {
+      var palmAngleToPositive = Math.degrees(angleBetween(Leap.vec3.normalize([0, 0, 0], hand.palmVelocity), [1, 0, 0]));
+      var palmAngleToNegative = Math.degrees(angleBetween(Leap.vec3.normalize([0, 0, 0], hand.palmVelocity), [-1, 0, 0]));
+    
+      if (palmAngleToPositive < 20 || palmAngleToNegative < 20) {
+        this.props.dispatch(changeCurrentTime(Math.round(this.sliderScale(hand.palmPosition[0]))));
+
+
+      }
+    }
   }
 
   selectMode(frame, lastFrame, hand){

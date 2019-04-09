@@ -42,7 +42,7 @@ class SliderContainer extends Component {
         <Slider 
           className="slider-current-time"
           min={1}
-          defaultValue={currentTime}
+          value={currentTime}
           max={98}
           onChange={this.handleChange.bind(this)}
         />
