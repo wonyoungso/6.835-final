@@ -8,6 +8,16 @@ export const windowResize = (dimension) => {
   }
 }
 
+export const changeGraphSetting = (zoom, center) => {
+  return {
+    type: 'CHANGE_GRAPH_SETTING',
+    payload: {
+      graphZoom: zoom,
+      graphCenter: center,
+    }
+  }
+}
+
 export const changeClicked = (clicked) => {
   return {
     type: "CHANGE_CLICKED",

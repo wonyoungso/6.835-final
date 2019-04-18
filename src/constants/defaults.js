@@ -5,6 +5,8 @@ export const DEFAULT_STATE = {
   rentData: [],
   buyData: [],
   zoom: 2.8,
+  graphCenter: [0, 0],
+  graphZoom: 1,
   center: [-95.3091743624725, 40.89824648650918],
   screenPosition: [0, 0],
   currentTime: 5,

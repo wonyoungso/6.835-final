@@ -9,6 +9,12 @@ export default function screenReducer(state = DEFAULT_STATE, action){
         windowWidth: action.payload.windowWidth,
         windowHeight: action.payload.windowHeight
       }
+    case 'CHANGE_GRAPH_SETTING':
+      return {
+        ...state,
+        graphZoom: action.payload.graphZoom,
+        graphCenter: action.payload.graphCenter
+      }
     case 'CHANGE_CLICKED':
       return {
         ...state,

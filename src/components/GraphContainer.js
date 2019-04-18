@@ -69,13 +69,17 @@ class GraphContainer extends Component {
         .tickSize(-width)
         .tickFormat("")
       )
-    svg.append("rect")
-      .attr('class', "event-area")
+    this.rectArea = svg.append("rect");
+
+    this.rectArea.attr('class', "event-area")
       .attr("width", width)
       .attr("height", height)
       .style("fill", "none")
       .style("pointer-events", "all")
-      .call(this.zoom);
+      .call(this.zoom)
+
+      // .duration(5500)
+      // .call(this.zoom.transform, d3.zoomIdentity.scale(5))
 
 
     svg.append("g")
@@ -94,6 +98,7 @@ class GraphContainer extends Component {
     svg.append("g").attr("class", "grapharea")
       .attr("clip-path", "url(#clip)")
 
+    // svg.call(this.zoom)
     // this.d3Render();
   }
 
@@ -170,6 +175,11 @@ class GraphContainer extends Component {
 
   componentDidUpdate(prevProps){
     this.d3Render(prevProps);
+    this.zoomUpdate(prevProps);
+  }
+
+  zoomUpdate(prevProps){
+    this.rectArea.call(this.zoom.transform, d3.zoomIdentity.scale(this.props.graphZoom).translate(this.props.graphCenter[0], this.props.graphCenter[1]));
   }
 
   getDomains(graphSelected){
@@ -404,7 +414,9 @@ class GraphContainer extends Component {
 let mapStateToProps = state => {
   return {
     graphSelected: state.graphSelected,
-    currentTime: state.currentTime
+    currentTime: state.currentTime,
+    graphCenter: state.graphCenter,
+    graphZoom: state.graphZoom
   }
 };
 

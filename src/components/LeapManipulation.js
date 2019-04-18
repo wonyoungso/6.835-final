@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import Leap from 'leapjs';
 import { MODES } from '../constants/defaults';
-import { changeMapOrGraph, changeMapSetting, changeScreenPosition, changeClicked, changeCurrentTime } from '../actions';
+import { changeMapOrGraph, changeMapSetting, changeGraphSetting, changeScreenPosition, changeClicked, changeCurrentTime } from '../actions';
 import { screenPosition, angleBetween, isWithIn } from '../utils/';
 import * as d3 from 'd3';
 import _ from 'lodash';
@@ -34,11 +34,11 @@ class LeapManipulation extends Component {
       if (mapOrGraph === "Map") {
         if (frame.hands.length === 1) {
           let hand = frame.hands[0];
-
-          if (hand.indexFinger.extended && hand.middleFinger.extended && !hand.thumb.extended && !hand.ringFinger.extended && !hand.pinky.extended) {
-            this.detectPan(frame);
-          } else if (hand.indexFinger.extended && !hand.middleFinger.extended && !hand.thumb.extended && !hand.ringFinger.extended && !hand.pinky.extended) {
+          
+          if (hand.indexFinger.extended && !hand.middleFinger.extended && !hand.thumb.extended && !hand.ringFinger.extended && !hand.pinky.extended) {
             this.selectMode(frame, this.controller.frame(1), hand);
+          }else if (hand.pinchStrength < 0.1 && hand.grabStrength < 0.1) {
+              this.detectPan(frame);
           }
 
 
@@ -50,9 +50,18 @@ class LeapManipulation extends Component {
 
         if (frame.hands.length === 1) {
           let hand = frame.hands[0];
-          
-          this.detectSlider(hand);
 
+          this.isGrabbing = hand.pinchStrength > 0.9;
+          
+          if (this.isGrabbing) {  
+            this.detectSlider(hand);
+          } else if (hand.pinchStrength < 0.1 && hand.grabStrength < 0.1) {
+
+            this.detectGraphPan(hand);
+          } 
+
+        } else if (frame.hands.length === 2) {
+          this.detectGraphZoom(frame);
         }
 
       }   
@@ -63,18 +72,25 @@ class LeapManipulation extends Component {
 
   }
 
+  detectGraphPan(hand){
+    
+    var normVector = Leap.vec3.normalize([0, 0, 0], hand.indexFinger.tipVelocity);
+    var magScale = d3.scaleLinear().domain([1, 5]).clamp(true).range([2, 0.1]);
+    var mag = magScale(this.props.graphZoom);
+    var revisedCenter = [this.props.graphCenter[0] + normVector[0] * mag, this.props.graphCenter[1] + -normVector[1] * mag];
+
+    this.props.dispatch(changeGraphSetting(this.props.graphZoom, revisedCenter));
+
+  }
+
   detectSlider(hand){
 
-    this.isGrabbing = hand.pinchStrength > 0.9;
-    if (this.isGrabbing) {
-      var palmAngleToPositive = Math.degrees(angleBetween(Leap.vec3.normalize([0, 0, 0], hand.palmVelocity), [1, 0, 0]));
-      var palmAngleToNegative = Math.degrees(angleBetween(Leap.vec3.normalize([0, 0, 0], hand.palmVelocity), [-1, 0, 0]));
-    
-      if (palmAngleToPositive < 20 || palmAngleToNegative < 20) {
-        this.props.dispatch(changeCurrentTime(Math.round(this.sliderScale(hand.palmPosition[0]))));
+    var palmAngleToPositive = Math.degrees(angleBetween(Leap.vec3.normalize([0, 0, 0], hand.palmVelocity), [1, 0, 0]));
+    var palmAngleToNegative = Math.degrees(angleBetween(Leap.vec3.normalize([0, 0, 0], hand.palmVelocity), [-1, 0, 0]));
+  
+    if (palmAngleToPositive < 20 || palmAngleToNegative < 20) {
+      this.props.dispatch(changeCurrentTime(Math.round(this.sliderScale(hand.palmPosition[0]))));
 
-
-      }
     }
   }
 
@@ -163,16 +179,85 @@ class LeapManipulation extends Component {
 
   detectPan(frame){
     var hand = frame.hands[0];
-    if (hand.indexFinger.extended && hand.middleFinger.extended && !hand.thumb.extended && !hand.ringFinger.extended && !hand.pinky.extended) {
-      var normVector = Leap.vec3.normalize([0, 0, 0], hand.indexFinger.tipVelocity);
-      var mag = 3;
-      
-      window.map.panBy([normVector[0] * mag, -normVector[1] * mag], {
-        animate: false
-      });
+    var normVector = Leap.vec3.normalize([0, 0, 0], hand.indexFinger.tipVelocity);
+    var mag = 3;
     
-    }
+    window.map.panBy([normVector[0] * mag, -normVector[1] * mag], {
+      animate: false
+    });
+  
 
+  }
+
+  detectGraphZoom(frame) {
+    if (frame.hands.length > 1) {
+      var leftHand = _.find(frame.hands, h => { return h.type === "left" });
+      var rightHand = _.find(frame.hands, h => { return h.type === "right" });
+
+      if (!_.isUndefined(leftHand) && !_.isUndefined(rightHand)) {
+
+        try {
+            
+          var leftIndexFinger = leftHand.indexFinger;
+          var rightIndexFinger = rightHand.indexFinger;
+
+          if (leftIndexFinger.extended && rightIndexFinger.extended) {
+            
+            // console.log("leftVelocity:", leftIndexFinger.tipVelocity);
+            var leftIndexFingerPositiveAngle = Math.degrees(angleBetween(Leap.vec3.normalize([0, 0, 0], leftIndexFinger.tipVelocity), [-1, -1, 0])); 
+            var rightIndexFingerPositiveAngle = Math.degrees(angleBetween(Leap.vec3.normalize([0, 0, 0], rightIndexFinger.tipVelocity), [1, 1, 0]))
+
+            var leftIndexFingerNegativeAngle = Math.degrees(angleBetween(Leap.vec3.normalize([0, 0, 0], leftIndexFinger.tipVelocity), [1, 1, 0]));
+            var rightIndexFingerNegativeAngle = Math.degrees(angleBetween(Leap.vec3.normalize([0, 0, 0], rightIndexFinger.tipVelocity), [-1, -1, 0]))
+
+
+            var { graphZoom, graphCenter } = this.props;
+            var velocityAvg;
+
+            if (leftIndexFingerPositiveAngle < 50 && rightIndexFingerPositiveAngle < 50) {
+            
+              velocityAvg = (Leap.vec3.length(leftIndexFinger.tipVelocity) + Leap.vec3.length(rightIndexFinger.tipVelocity)) * 0.5;
+
+              if (velocityAvg > 30) {
+                var d2 = 4 / (60 * 4),
+                    d3 = 4 * Math.log(2 / (1 + Math.exp(-Math.abs(d2)))) / Math.LN2,
+                    d4 = d3,
+                  delta = Math.max(1, Math.min(18, graphZoom + d4)) - graphZoom;
+                
+                // console.log(delta);
+                this.props.dispatch(changeGraphSetting(graphZoom + delta, graphCenter));
+              }
+
+            
+            } else if (leftIndexFingerNegativeAngle < 50 && rightIndexFingerNegativeAngle < 50) {
+            
+
+              velocityAvg = (Leap.vec3.length(leftIndexFinger.tipVelocity) + Leap.vec3.length(rightIndexFinger.tipVelocity)) * 0.5;
+
+              if (velocityAvg > 30) {
+                var d2 = -4 / (60 * 4),
+                  d3 = 4 * Math.log(2 / (1 + Math.exp(-Math.abs(d2)))) / Math.LN2,
+                  d4 = d3,
+                  delta = Math.max(1, Math.min(18, graphZoom - d4)) - graphZoom;
+
+                // console.log(delta);
+                this.props.dispatch(changeGraphSetting(graphZoom + delta, graphCenter));
+              }
+
+              // velocityAvg = (Leap.vec3.length(leftIndexFinger.tipVelocity) + Leap.vec3.length(rightIndexFinger.tipVelocity)) * 0.5;
+              
+              // this.props.dispatch(changeMapSetting(finalZoom, center, currentMode));
+            }
+
+
+          }
+          
+        } catch(e){
+        }
+        
+      }
+      
+    }
   }
 
   detectZoom(frame) {
@@ -274,6 +359,8 @@ let mapStateToProps = state => {
     currentMode: state.currentMode,
     zoom: state.zoom,
     center: state.center,
+    graphZoom: state.graphZoom,
+    graphCenter: state.graphCenter,
     clicked: state.clicked
   }
 }
