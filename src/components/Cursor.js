@@ -10,14 +10,16 @@ const CursorComp = styled.div`
   height: 10px;
   background:white;
   border-radius: 10px;
+  transform: ${props => props.clicked ? "scale(1.5)" : "scale(1)"};
 `;
 
 class Cursor extends Component {
   render() {
 
-    let { cursorPosition } = this.props;
+    let { cursorPosition, clicked } = this.props;
+    // console.log(clicked);
     return (
-      <CursorComp style={{ left: cursorPosition[0] + 15, top: cursorPosition[1] + 170}}>
+      <CursorComp clicked={clicked} style={{ left: cursorPosition[0] + 15, top: cursorPosition[1] + 170}}>
       </CursorComp>
     )
   }

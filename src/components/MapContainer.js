@@ -20,7 +20,7 @@ const MapDiv = styled.div`
 
 const MapContainerDiv = styled.div`
   transform: ${props => props.mapOrGraph === "Map" ? "scale(1)" : "scale(0.8)"};
-  opacity: ${props => props.mapOrGraph === "Map" ? 1 : 0.5};
+  opacity: 1;
   transform-origin: center left;
   transition: 0.4s all;
 
@@ -549,7 +549,7 @@ class MapContainer extends Component {
   componentDidUpdate(prevProps) {
     this.map.resize();
 
-    if (prevProps.clicked !== this.props.clicked && this.props.clicked) {
+    if (prevProps.clicked !== this.props.clicked && this.props.clicked && this.props.mapOrGraph === "Map") {
 
       this.handleViewClick(this.props.screenPosition);
     }
@@ -557,8 +557,8 @@ class MapContainer extends Component {
       this.map.setZoom(this.props.zoom);
     }
 
-    if (prevProps.screenPosition[0] !== this.props.screenPosition[0] || 
-        prevProps.screenPosition[1] !== this.props.screenPosition[1]) {
+    if ((prevProps.screenPosition[0] !== this.props.screenPosition[0] || 
+        prevProps.screenPosition[1] !== this.props.screenPosition[1]) && this.props.mapOrGraph === "Map") {
       
       this.handleMouseMove(this.props.screenPosition);
       
@@ -645,7 +645,7 @@ class MapContainer extends Component {
       }
       console.log(g.type);
       
-      this.map.easeTo({
+      this.map.jumpTo({
         center: center,
         zoom: _.find(MODES, m => { return m.mode === g.type }).zoom
       }, { command: 'popupFromGraph', popupName: popupName, center: center });

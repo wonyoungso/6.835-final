@@ -176,6 +176,35 @@ class GraphContainer extends Component {
   componentDidUpdate(prevProps){
     this.d3Render(prevProps);
     this.zoomUpdate(prevProps);
+
+    if (this.props.mapOrGraph === "Graph") {
+
+      // this.props.screenPosition);
+      var svg = d3.select(this.svgRef.current);
+      svg.selectAll(".graph-text.title").dispatch('click');
+
+
+      if (!_.isNull(this.props.currentFocusMap)) {
+        svg.selectAll("path.line")
+          .style('stroke-width', (d) => {
+            return d.id === this.props.currentFocusMap ? 3 : 1;
+          })
+        svg.selectAll(".idgraph")
+          .style('opacity', (d) => {
+            return d.id === this.props.currentFocusMap ? 1 : 0.2;
+          })
+      } else {
+        svg.selectAll("path.line")
+          .style('stroke-width', 1);
+        svg.selectAll(".idgraph")
+          .style('opacity', 1);
+
+      }
+
+    }
+
+   
+
   }
 
   zoomUpdate(prevProps){
@@ -200,7 +229,22 @@ class GraphContainer extends Component {
     };
   }
 
+  clickDetection(d) {
+    let { screenPosition } = this.props;
 
+    let x = this.xScale(new Date(_.last(d.graph.p_houseValues)[0])) * this.zoomTransform.k + this.zoomTransform.x + 5;
+    let y = this.yScale(_.last(d.graph.p_houseValues)[1]) * this.zoomTransform.k + this.zoomTransform.y + 5;
+    
+    let screenX = (window.innerWidth * 0.5) + (x * 1.2);
+    let screenY = y * 1.2;
+    if (screenPosition[0] >= screenX && screenPosition[0] <= screenX + 150 &&
+        screenPosition[1] >= screenY - 25 && screenPosition[1] <= screenY + 50){
+      return true;
+    } else {
+      return false;
+    }
+
+  }
   d3Render(prevProps){
     let { containerWidth, containerHeight, graphSelected, currentTime } = this.props;
 
@@ -309,7 +353,7 @@ class GraphContainer extends Component {
 
         let g = svg.select(".grapharea").selectAll("g")
           .data(graphSelectedValues)
-        .enter().append("g")
+          .enter().append("g").attr("class", "idgraph");
           
 
         g.append("path")
@@ -326,7 +370,7 @@ class GraphContainer extends Component {
             this.props.dispatch(updateCurrentFocusMap(e.id));
           });
         
-        g.append("text")
+         g.append("text")
           .attr("class", "graph-text title")
           .style('fill', (d, i) => d.color)
           .attr("x", d => {
@@ -336,8 +380,20 @@ class GraphContainer extends Component {
             return this.yScale(_.last(d.graph.p_houseValues)[1]) * this.zoomTransform.k + this.zoomTransform.y + 5;
           })
           .text(d => { return getLabel(d); })
-          .on('click', e => {
-            this.props.dispatch(updateCurrentFocusMap(e.id));
+          .on('click', d => {
+            
+            // console.log("clickdetection", d.id, " result", this.clickDetection(d));
+            if (this.clickDetection(d)) {
+              if (this.props.clicked) {
+
+                this.props.dispatch(removeGraphSelected(d.id));
+
+              } else {
+
+                this.props.dispatch(updateCurrentFocusMap(d.id));
+              }
+            }
+
           });
 
         g.append("text")
@@ -350,20 +406,20 @@ class GraphContainer extends Component {
             return this.yScale(_.last(d.graph.p_houseValues)[1]) * this.zoomTransform.k + this.zoomTransform.y + 17;
           })
           .text(d => { return `$${numberWithDelimiter(_.last(d.graph.p_houseValues)[1])}`; })
-          .on('click', e => {
-            this.props.dispatch(updateCurrentFocusMap(e.id));
-          });
+          // .on('click', e => {
+          //   this.props.dispatch(updateCurrentFocusMap(e.id));
+          // });
       
         g.append("text")
           .attr("class", "graph-text close-btn")
           .style('fill', "white")
           .attr("x", d => {
-            return this.xScale(new Date(_.last(d.graph.p_houseValues)[0])) * this.zoomTransform.k + this.zoomTransform.x + 45;
+            return this.xScale(new Date(_.last(d.graph.p_houseValues)[0])) * this.zoomTransform.k + this.zoomTransform.x + 205;
           })
           .attr("y", d => {
-            return this.yScale(_.last(d.graph.p_houseValues)[1]) * this.zoomTransform.k + this.zoomTransform.y + 17;
+            return this.yScale(_.last(d.graph.p_houseValues)[1]) * this.zoomTransform.k + this.zoomTransform.y;
           })
-          .text("x")
+          .text("X")
           .on('click', e => {
             this.props.dispatch(removeGraphSelected(e.id))
           });
@@ -416,7 +472,11 @@ let mapStateToProps = state => {
     graphSelected: state.graphSelected,
     currentTime: state.currentTime,
     graphCenter: state.graphCenter,
-    graphZoom: state.graphZoom
+    graphZoom: state.graphZoom,
+    screenPosition: state.screenPosition,
+    clicked: state.clicked,
+    mapOrGraph: state.mapOrGraph,
+    currentFocusMap: state.currentFocusMap
   }
 };
 

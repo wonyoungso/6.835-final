@@ -19,12 +19,12 @@ const DataArea = styled.div`
 `;
 
 const GraphArea = styled.div`
-  transform: ${props => props.mapOrGraph === "Map" ? "scale(0.8)" : "scale(1)"};
+  transform: ${props => props.mapOrGraph === "Map" ? "scale(0.8)" : "scale(1.2)" };
   opacity: ${props => props.mapOrGraph === "Map" ? 0.5: 1 };
   transform-origin: center left;
   transition: 0.4s all;
   position: absolute;
-  left: 55%;
+  left:   ${props => props.mapOrGraph === "Map" ? "60%" : "50%" };
   top: 0;
   background: black;
   z-index:0;
@@ -67,7 +67,7 @@ class Home extends Component {
             <GraphContainer containerWidth={windowWidth * 0.4} containerHeight={windowHeight - HEADER_HEIGHT - 100} />
           </GraphArea>
         </Divider>
-        <Cursor cursorPosition={screenPosition} />
+        <Cursor clicked={this.props.clicked} cursorPosition={screenPosition} />
       </Fragment>
     );
   }
@@ -78,7 +78,8 @@ let mapStateToProps = state => {
     windowWidth: state.windowWidth,
     windowHeight: state.windowHeight,
     screenPosition: state.screenPosition,
-    mapOrGraph: state.mapOrGraph
+    mapOrGraph: state.mapOrGraph,
+    clicked: state.clicked
   }
 }
 
