@@ -17,7 +17,7 @@ let Container = styled.div`
 
   h3 {
     font-size:0.8em;
-    margin-right: 10px;
+    margin-right: 10px;x
   }
 
   h3.date {
@@ -32,6 +32,17 @@ class SliderContainer extends Component {
   handleChange(e){
     this.props.dispatch(changeCurrentTime(e));
   }
+  componentDidMount(){
+
+    var handle = document.querySelector(".rc-slider.slider-current-time .rc-slider-handle");
+    handle.style.transition = "0.4s box-shadow";
+  }
+  componentDidUpdate(prevProps){
+    console.log("this.props.screenGrabbing:", this.props.sliderGrabbing);
+    var handle = document.querySelector(".rc-slider.slider-current-time .rc-slider-handle");
+    handle.style.boxShadow = this.props.sliderGrabbing ? "0 0 5px 5px #fff, 0 0 5px 5px #ffd712, 0 0 5px 5px #f0ff08" : "none";
+  }
+
   render() {
     let { currentTime } = this.props;
     return (
@@ -57,7 +68,8 @@ class SliderContainer extends Component {
 
 let mapStateToProps = state => {
   return {
-    currentTime: state.currentTime
+    currentTime: state.currentTime,
+    sliderGrabbing: state.sliderGrabbing
   }
 }
 

@@ -18,18 +18,20 @@ export const DEFAULT_STATE = {
   clickPosition: [0, 0],
   graphSelected: {
     
-  }
+  },
+  sliderGrabbing: false
 };
 
 export const HEADER_HEIGHT = 165;
 export const GRAPH_HEIGHT = 350;
 export const SLIDER_HEIGHT = 50;
+
 export const MODES = {
   0: { label: "country", mode: "nation_geo-9an1r8", id: 0, range: [2.8, 3.49], zoom: 2.8 + (3.5 - 2.8) * 0.5 },
   1: { label: "division of states", mode: "division_geo-a4uhem", id: 1, range: [3.5, 4.19], zoom: 3.5 + (4.2 - 3.5) * 0.5 },
-  2: { label: "states", mode: "state_geo-c0eo4i", id: 2, range: [4.2, 4.79], zoom: 4.2 + (4.8 - 4.2) * 0.5 },
-  3: { label: "counties", mode: "county_geo-cn1mtx", id: 3, range: [4.8, 6.19], zoom: 4.8 + (6.2 - 4.8) * 0.5 },
-  4: { label: "cities", mode: "cities_geo_final_02-0oxkdo", id: 4, range: [6.2, 14], zoom: 8 }
+  2: { label: "states", mode: "state_geo-c0eo4i", id: 2, range: [4.2, 5.19], zoom: 4.2 + (5.2 - 4.2) * 0.5 },
+  3: { label: "counties", mode: "county_geo-cn1mtx", id: 3, range: [5.2, 7.19], zoom: 5.2 + (7.2 - 5.2) * 0.5 },
+  4: { label: "cities", mode: "cities_geo_final_02-0oxkdo", id: 4, range: [7.2, 14], zoom: 8 }
 }
 
 export const CURRENT_TIMES= [

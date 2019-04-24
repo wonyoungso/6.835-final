@@ -187,7 +187,7 @@ class GraphContainer extends Component {
       if (!_.isNull(this.props.currentFocusMap)) {
         svg.selectAll("path.line")
           .style('stroke-width', (d) => {
-            return d.id === this.props.currentFocusMap ? 3 : 1;
+            return d.id === this.props.currentFocusMap ? 4 : 2;
           })
         svg.selectAll(".idgraph")
           .style('opacity', (d) => {
@@ -362,6 +362,7 @@ class GraphContainer extends Component {
             return d.color;
 
           })
+          .style('stroke-width', 2)
           .attr("d", d => {
             return line(d.graph.p_houseValues)
           })
@@ -384,14 +385,14 @@ class GraphContainer extends Component {
             
             // console.log("clickdetection", d.id, " result", this.clickDetection(d));
             if (this.clickDetection(d)) {
-              if (this.props.clicked) {
+              // if (this.props.clicked) {
 
-                this.props.dispatch(removeGraphSelected(d.id));
+              //   this.props.dispatch(removeGraphSelected(d.id));
 
-              } else {
+              // } else {
 
                 this.props.dispatch(updateCurrentFocusMap(d.id));
-              }
+              // }
             }
 
           });

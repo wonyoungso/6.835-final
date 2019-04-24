@@ -232,9 +232,9 @@ class MapContainer extends Component {
       currentMode = "nation_geo-9an1r8";
     } else if (zoom >= 3.5 && zoom < 4.2) {
       currentMode = "division_geo-a4uhem";
-    } else if (zoom >= 4.2 && zoom < 4.8) {
+    } else if (zoom >= 4.2 && zoom < 5.2) {
       currentMode = "state_geo-c0eo4i";
-    } else if (zoom >= 4.8 && zoom < 6.2) {
+    } else if (zoom >= 5.2 && zoom < 7.2) {
       currentMode = "county_geo-cn1mtx";
     } else {
       currentMode = "cities_geo_final_02-0oxkdo";
@@ -250,9 +250,9 @@ class MapContainer extends Component {
     
     this.map.setLayerZoomRange("nation-geo-9an1r8", 2.8, 3.5);
     this.map.setLayerZoomRange("division-geo-a4uhem", 3.5, 4.2);
-    this.map.setLayerZoomRange("state-geo-c0eo4i", 4.2, 4.8);
-    this.map.setLayerZoomRange("county-geo-cn1mtx", 4.8, 6.2);
-    this.map.setLayerZoomRange("cities-geo-final-02-0oxkdo", 6.2, 15.5);
+    this.map.setLayerZoomRange("state-geo-c0eo4i", 4.2, 5.2);
+    this.map.setLayerZoomRange("county-geo-cn1mtx", 5.2, 7.2);
+    this.map.setLayerZoomRange("cities-geo-final-02-0oxkdo", 7.2, 15.5);
 
     this.map.addLayer({
       id: "nation-geo-9an1r8__hover",
@@ -318,7 +318,7 @@ class MapContainer extends Component {
 
     this.map.addLayer({
       id: "state-geo-c0eo4i__hover",
-      maxzoom: 4.8,
+      maxzoom: 5.2,
       minzoom: 4.2,
       source: "composite",
       "source-layer": "state_geo-c0eo4i",
@@ -334,7 +334,7 @@ class MapContainer extends Component {
 
     this.map.addLayer({
       id: "state-geo-c0eo4i__clicked",
-      maxzoom: 4.8,
+      maxzoom: 5.2,
       minzoom: 4.2,
       source: "composite",
       "source-layer": "state_geo-c0eo4i",
@@ -349,8 +349,8 @@ class MapContainer extends Component {
     this.map.addLayer({
       "filter": ["==", "GEOID", ""],
       id: "county-geo-cn1mtx__hover",
-      maxzoom: 6.2,
-      minzoom: 4.8,
+      maxzoom: 7.2,
+      minzoom: 5.2,
       source: "composite",
       "source-layer": "county_geo-cn1mtx",
       type: "line",
@@ -363,8 +363,8 @@ class MapContainer extends Component {
 
     this.map.addLayer({
       id: "county-geo-cn1mtx__clicked",
-      maxzoom: 6.2,
-      minzoom: 4.8,
+      maxzoom: 7.2,
+      minzoom: 5.2,
       source: "composite",
       "source-layer": "county_geo-cn1mtx",
       type: "line",
@@ -378,7 +378,7 @@ class MapContainer extends Component {
     this.map.addLayer({
       id: "cities-geo-final-02-0oxkdo__hover",
       maxzoom: 15.5,
-      minzoom: 6.2,
+      minzoom: 7.2,
       source: "composite",
       "source-layer": "cities_geo_final_02-0oxkdo",
       type: "circle",
@@ -392,7 +392,7 @@ class MapContainer extends Component {
     this.map.addLayer({
       id: "cities-geo-final-02-0oxkdo__clicked",
       maxzoom: 15.5,
-      minzoom: 6.2,
+      minzoom: 7.2,
       source: "composite",
       "source-layer": "cities_geo_final_02-0oxkdo",
       type: "circle",
@@ -611,7 +611,11 @@ class MapContainer extends Component {
 
         
         // debugger;
-        expressions[g.type].push(g.graph[nameValue], g.color);
+        try {
+          expressions[g.type].push(g.graph[nameValue], g.color);
+        } catch(e){
+          
+        }
       });
 
       _.each(expressions, (v, k) => {

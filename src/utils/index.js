@@ -11,6 +11,10 @@ Math.degrees = function (radians) {
   return radians * 180 / Math.PI;
 };
 
+export const constrain = (n, low, high) => {
+  return Math.max(Math.min(n, high), low);
+};
+
 export const isWithIn = (p1, bp) => {
   
   var margin = 30;

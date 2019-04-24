@@ -8,6 +8,15 @@ export const windowResize = (dimension) => {
   }
 }
 
+export const changeSliderGrabbing = (sliderGrabbing) => {
+  return {
+    type: "CHANGE_SLIDER_GRABBING",
+    payload: {
+      sliderGrabbing: sliderGrabbing
+    }
+  }
+}
+
 export const changeGraphSetting = (zoom, center) => {
   return {
     type: 'CHANGE_GRAPH_SETTING',
