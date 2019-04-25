@@ -41,6 +41,14 @@ class BackFaceSummary extends Component {
       this.setState({
         idx: 0
       });
+    } else if (prevProps.flipMode === "back" && this.props.flipMode === "front") { 
+      _.delay(() => {
+
+        this.setState({
+          idx: -1
+        });
+      }, 1000);
+
     }
   }
   handleDone(e){

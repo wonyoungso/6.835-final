@@ -235,7 +235,7 @@ class GraphContainer extends Component {
     let x = this.xScale(new Date(_.last(d.graph.p_houseValues)[0])) * this.zoomTransform.k + this.zoomTransform.x + 5;
     let y = this.yScale(_.last(d.graph.p_houseValues)[1]) * this.zoomTransform.k + this.zoomTransform.y + 5;
     
-    let screenX = (window.innerWidth * 0.5) + (x * 1.2);
+    let screenX = (window.innerWidth * 0.5) + x;
     let screenY = y * 1.2;
     if (screenPosition[0] >= screenX && screenPosition[0] <= screenX + 150 &&
         screenPosition[1] >= screenY - 25 && screenPosition[1] <= screenY + 50){
