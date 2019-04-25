@@ -7,6 +7,7 @@ import SliderContainer from './SliderContainer';
 import Legend from './Legend';
 import Cursor from './Cursor';
 import LeapManipulation from './LeapManipulation';
+import BackFaceSummary from './BackFaceSummary';
 
 export {
   MapContainer,
@@ -17,5 +18,6 @@ export {
   DivisionText,
   Legend,
   Cursor,
-  LeapManipulation
+  LeapManipulation,
+  BackFaceSummary
 };

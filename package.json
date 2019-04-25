@@ -7,6 +7,7 @@
   "dependencies": {
     "@turf/turf": "^5.1.6",
     "axios": "^0.18.0",
+    "baffle": "^0.3.6",
     "d3": "^5.9.1",
     "gh-pages": "^2.0.1",
     "leapjs": "^0.6.4",
@@ -21,6 +22,7 @@
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.1.5",
+    "react-typist": "^2.0.5",
     "redux": "^4.0.1",
     "styled-components": "^4.1.3"
   },

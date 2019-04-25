@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import Leap from 'leapjs';
 import { MODES } from '../constants/defaults';
-import { changeMapOrGraph, changeMapSetting, changeGraphSetting, changeScreenPosition, changeClicked, changeCurrentTime, changeSliderGrabbing } from '../actions';
+import { changeMapOrGraph, changeMapSetting, changeGraphSetting, changeScreenPosition, changeClicked, changeCurrentTime, changeSliderGrabbing, changeFlipMode } from '../actions';
 import { screenPosition, angleBetween, isWithIn, constrain } from '../utils/';
 import * as d3 from 'd3';
 import _ from 'lodash';
@@ -21,6 +21,7 @@ class LeapManipulation extends Component {
     this.isGrabbing = false;
     this.maxX = -999;
     this.minX = 999;
+    this.flipEventInterval = true;
     this.sliderScale = d3.scaleLinear().domain([-200, 200]).clamp(true).range([1, 98]);
     this.mapPanScale = d3.scaleLinear().domain([2.8, 15.5]).clamp(true).range([3, 10]);
 
@@ -29,56 +30,110 @@ class LeapManipulation extends Component {
   componentDidMount(){
 
     this.controller = Leap.loop({ enableGestures: true }, (frame) => {
+      
+      
       let { mapOrGraph } = this.props;
       let detection = this.detectMapOrGraph(frame);
 
-      if (!detection){
-        if (mapOrGraph === "Map") {
-          if (frame.hands.length === 1) {
-            let hand = frame.hands[0];
+      if (!detection) {
+        var summary = this.detectSummary(frame);
+        
+        if (!summary){
+          if (mapOrGraph === "Map") {
+            if (frame.hands.length === 1) {
+              let hand = frame.hands[0];
 
-            if (hand.pinchStrength < 0.1 && hand.grabStrength < 0.1) {
-              this.detectPan(frame);
-            } else {
-              this.selectMode(frame, this.controller.frame(1), hand);
+              if (hand.pinchStrength < 0.1 && hand.grabStrength < 0.1) {
+                this.detectPan(frame);
+              } else {
+
+                var palmAngle = Math.degrees(angleBetween(Leap.vec3.normalize([0, 0, 0], hand.palmNormal), [0, -1, 0]));
+
+                if (palmAngle <= 120) {
+                  this.selectMode(frame, this.controller.frame(1), hand);
+                }
+              }
+
+
+            } else if (frame.hands.length === 2) {
+              this.detectZoom(frame);
             }
 
+          } else {
 
-          } else if (frame.hands.length === 2) {
-            this.detectZoom(frame);
-          }
+            if (frame.hands.length === 1) {
+              let hand = frame.hands[0];
 
-        } else {
+              this.isGrabbing = hand.pinchStrength > 0.7 && hand.grabStrength > 0.7;
+              this.props.dispatch(changeSliderGrabbing(this.isGrabbing));
+              if (this.isGrabbing) {
 
-          if (frame.hands.length === 1) {
-            let hand = frame.hands[0];
+                this.detectSlider(hand);
 
-            this.isGrabbing = hand.pinchStrength > 0.7 && hand.grabStrength > 0.7;
-            this.props.dispatch(changeSliderGrabbing(this.isGrabbing));
-            if (this.isGrabbing) {
+              } else if (hand.pinchStrength < 0.1 && hand.grabStrength < 0.1) {
 
-              this.detectSlider(hand);
+                this.detectGraphPan(hand);
+              } else if (!hand.thumb.extended && !hand.ringFinger.extended && !hand.pinky.extended) {
 
-            } else if (hand.pinchStrength < 0.1 && hand.grabStrength < 0.1) {
+                this.graphSelectMode(frame, this.controller.frame(1), hand);
+              }
 
-              this.detectGraphPan(hand);
-            } else if (!hand.thumb.extended && !hand.ringFinger.extended && !hand.pinky.extended) {
+            } else if (frame.hands.length === 2) {
+              this.detectGraphZoom(frame);
+            }
 
-              this.graphSelectMode(frame, this.controller.frame(1), hand);
-            } 
+          }   
+        }
 
-          } else if (frame.hands.length === 2) {
-            this.detectGraphZoom(frame);
-          }
-
-        }   
       }
-     
     });
 
 
     this.controller.connect();
 
+  }
+
+  detectSummary(frame) {
+    if (frame.hands.length === 1) {
+
+      var hand = frame.hands[0];
+
+      var palmAngle = Math.degrees(angleBetween(Leap.vec3.normalize([0, 0, 0], hand.palmNormal), [0, -1, 0]));
+
+      if (palmAngle > 120) {
+        var fingerSpeedAvg = 0;
+        var angleAvg = 0;
+
+
+        _.each(hand.fingers, finger => {
+          if (finger.type > 0) {
+            fingerSpeedAvg += Leap.vec3.length(finger.tipVelocity);
+            var angle = Math.degrees(angleBetween(Leap.vec3.normalize([0, 0, 0], finger.tipVelocity), [-1, 0, 0]));
+            angleAvg += angle;
+          } 
+        });
+
+        fingerSpeedAvg = fingerSpeedAvg / 4;
+        angleAvg = angleAvg / 4;
+        if (fingerSpeedAvg > 200 && angleAvg < 40) {
+          if (this.flipEventInterval) {
+            this.props.dispatch(changeFlipMode(this.props.flipMode === "front" ? "back" : "front"));
+            
+            this.flipEventInterval = false;
+            _.delay(() => {
+              this.flipEventInterval = true;
+            }, 2000);
+          }
+          
+          return true;
+        }
+
+
+      }
+    }
+
+
+    return false;
   }
 
   detectGraphPan(hand){
@@ -418,7 +473,8 @@ let mapStateToProps = state => {
     graphZoom: state.graphZoom,
     graphCenter: state.graphCenter,
     currentTime: state.currentTime,
-    clicked: state.clicked
+    clicked: state.clicked,
+    flipMode: state.flipMode
   }
 }
 

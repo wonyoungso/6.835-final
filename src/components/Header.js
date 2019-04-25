@@ -9,6 +9,8 @@ import _ from 'lodash';
 const HeaderContainer = styled.header`
   position: relative;
   height: ${HEADER_HEIGHT}px;
+  background: black;
+  z-index: 5;
 `;
 
 const DivisionArea = styled.div`

@@ -8,6 +8,14 @@ export const windowResize = (dimension) => {
   }
 }
 
+export const changeFlipMode = (flipMode) => {
+  return {
+    type: "CHANGE_FLIP_MODE",
+    payload: {
+      flipMode: flipMode
+    }
+  }
+}
 export const changeSliderGrabbing = (sliderGrabbing) => {
   return {
     type: "CHANGE_SLIDER_GRABBING",

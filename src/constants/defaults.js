@@ -11,6 +11,7 @@ export const DEFAULT_STATE = {
   center: [-95.3091743624725, 40.89824648650918],
   screenPosition: [0, 0],
   currentTime: 5,
+  flipMode: "front",
   currentMode: "nation_geo-9an1r8",
   mapOrGraph: "Map", // Graph
   currentFocusMap: null,

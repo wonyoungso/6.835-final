@@ -9,6 +9,11 @@ export default function screenReducer(state = DEFAULT_STATE, action){
         windowWidth: action.payload.windowWidth,
         windowHeight: action.payload.windowHeight
       }
+    case "CHANGE_FLIP_MODE":
+      return {
+        ...state,
+        flipMode: action.payload.flipMode
+      }
     case "CHANGE_SLIDER_GRABBING":
       return {
         ...state,
